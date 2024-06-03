@@ -2,6 +2,73 @@
 Changelog for package mp2p_icp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.4.2 (2024-05-28)
+------------------
+* mm-viewer: add check-all, check-none to layer filters
+* Add new filter: FilterRemoveByVoxelOccupancy
+* mm-viewer: camera travelling keyframes-based animations
+* mm-viewer: navigate the map with keyboard arrows; add a load button
+* mm-viewer: can now also draws a TUM trajectory overlaid with the map
+* UI apps: smoother rendering
+* icp-log-viewer and mm-viewer: the UI now has a XYZ corner overlay
+* sm-cli: command "export-kfs" now has an optional flag '--output-twist'
+* FilterDeskew: ignore empty input maps
+* More debug-level traces
+* deskew filter: Fix case of variable names in docs
+* sm-cli app: Add new command 'trim' to cut simplemaps by bounding box
+* mm-viewer: show mouse pointing coordinates
+* Contributors: Jose Luis Blanco-Claraco
+
+1.4.1 (2024-05-19)
+------------------
+* Fix build for older mrpt versions
+* ICP pipelines: Implement loading ``quality_checkpoints`` parameter from YAML config file
+* Quality evaluators: add the option for 'hard discard'
+* Update QualityEvaluator_Voxels to use prebuilt voxel layers from input maps. Add unit tests.
+* BUGFIX: Fix deserializing georeferenced .mm files stored in <1.4.0 format
+* ICP: quality evaluators can now have formulas in their parameters too
+* mm-viewer and icp-log-viewer: extend zoom range so maps of tens of kms can be viewed at once
+* Contributors: Jose Luis Blanco-Claraco
+
+1.4.0 (2024-05-06)
+------------------
+* Update commit for robin-map to latest version (patch contributed upstream)
+* icp-log-viewer: UI now has a slider for each map point size
+* ICP: Add a new quality_checkpoint parameter to early abort ICP attempts
+* georeferenced maps: T_enu_to_map now has a covariance field
+* mm-viewer: display ENU frame too
+* Contributors: Jose Luis Blanco-Claraco
+
+1.3.3 (2024-04-30)
+------------------
+* Add minimum_input_points_to_filter option to FilterDecimateVoxels
+* FIX: QualityEvaluator_PairedRatio throws when one of the reference maps is empty
+* FIX BUG: Won't try to match 2D pointclouds if their height is different
+* Clarify comments in metricmap.h about geodetic references
+* Fix printing metric_map_t contents when it only has a gridmap
+* Fix potential dangling references (g++ 13 warning)
+* Fix potential use of uninitialized point index
+* Bump cmake_minimum_required to 3.5
+* Contributors: Jose Luis Blanco-Claraco
+
+1.3.2 (2024-04-22)
+------------------
+* tsl::robin_map library is no longer exposed neither in the public API nor as public headers (PIMPL pattern)
+  This is to prevent Debian-level collisions with other packages also exposing it.
+* add first icp-log-viewer docs
+* Contributors: Jose Luis Blanco-Claraco
+
+1.3.1 (2024-04-16)
+------------------
+* mm-viewer and icp-log-viewer: saves UI state in persistent user config file
+* FIX: missing UI refresh when clicking showPairings checkbox
+* renamed apps for less verbose names: icp-run, icp-log-viewer
+* ICP core now defines a variable ICP_ITERATION for use in programmable formulas in pipelines
+* icp-log-viewer: much faster rendering of ICP iteration details
+* mm-viewer: fix bug in calculation of bounding box
+* Merge docs with main MOLA repo
+* Contributors: Jose Luis Blanco-Claraco
+
 1.3.0 (2024-03-10)
 ------------------
 * mm-viewer: new options to visualize georeferenced maps

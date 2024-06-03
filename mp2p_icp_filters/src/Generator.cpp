@@ -57,7 +57,8 @@ void Generator::Parameters::load_from_yaml(
         const std::set<std::string> allowedTopKeys = {"class", "plugin"};
 
         ASSERT_(c["metric_map_definition"].isMap());
-        for (const auto& [k, v] : c["metric_map_definition"].asMap())
+        const auto mmd = c["metric_map_definition"].asMap();
+        for (const auto& [k, v] : mmd)
         {
             const auto key = k.as<std::string>();
             if (v.isNullNode()) continue;  // ignore
@@ -330,14 +331,20 @@ void Generator::implProcessDefault(
     const std::optional<mrpt::poses::CPose3D>& robotPose) const
 {
     using namespace mrpt::obs;
+    using namespace std::string_literals;
 
     bool processed = false;
 
     const auto obsClassName = o.GetRuntimeClass()->className;
 
     // user-given filters: Done *AFTER* creating the map, if needed.
-    if (!std::regex_match(obsClassName, process_class_names_regex_)) return;
-    if (!std::regex_match(o.sensorLabel, process_sensor_labels_regex_)) return;
+    if (obsClassName == "mrpt::obs::CObservationComment"s ||
+        !std::regex_match(obsClassName, process_class_names_regex_) ||
+        !std::regex_match(o.sensorLabel, process_sensor_labels_regex_))
+    {
+        MRPT_LOG_DEBUG_STREAM("Skipping this observation");
+        return;
+    }
 
     // load lazy-load from disk:
     o.load();
@@ -494,8 +501,9 @@ void Generator::implProcessCustomMap(
             }
 
             MRPT_LOG_DEBUG_STREAM(
-                "Built INI-like block:\n"
-                << cfg.getContent());
+                "Built INI-like block for layer '" << params_.target_layer
+                                                   << "':\n"
+                                                   << cfg.getContent());
 
             // parse it:
             mapInits.loadFromConfigFile(cfg, cfgPrefix);
@@ -514,8 +522,13 @@ void Generator::implProcessCustomMap(
     ASSERT_(outMap);
 
     // user-given filters: Done *AFTER* creating the map, if needed.
-    if (!std::regex_match(obsClassName, process_class_names_regex_)) return;
-    if (!std::regex_match(o.sensorLabel, process_sensor_labels_regex_)) return;
+    if (obsClassName == "mrpt::obs::CObservationComment"s ||
+        !std::regex_match(obsClassName, process_class_names_regex_) ||
+        !std::regex_match(o.sensorLabel, process_sensor_labels_regex_))
+    {
+        MRPT_LOG_DEBUG_STREAM("Skipping this observation");
+        return;
+    }
 
     // Observation format:
     o.load();
