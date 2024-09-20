@@ -1,3 +1,26 @@
+## mp2p_icp (humble) - 1.6.2-1
+
+The packages in the `mp2p_icp` repository were released into the `humble` distro by running `/home/z572/gits/revyos-ros/venv/bin/bloom-release -r humble mp2p_icp --override-release-repository-push-url git@github.com:revyos-ros/mp2p_icp-release.git` on `Fri, 20 Sep 2024 06:33:08 -0000`
+
+The `mp2p_icp` package was released.
+
+Version of package(s) in repository `mp2p_icp`:
+
+- upstream repository: https://github.com/MOLAorg/mp2p_icp.git
+- release repository: https://github.com/revyos-ros/mp2p_icp-release.git
+- rosdistro version: `1.6.2-1`
+- old version: `1.4.2-1`
+- new version: `1.6.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## mp2p_icp (rolling) - 1.4.2-1
 
 The packages in the `mp2p_icp` repository were released into the `rolling` distro by running `/home/jlblanco/code/bloom-venv/bin/bloom-release -r rolling -y mp2p_icp` on `Tue, 28 May 2024 08:36:12 -0000`
