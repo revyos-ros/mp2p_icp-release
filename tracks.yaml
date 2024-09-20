@@ -1,3 +1,4 @@
+release_repo_url: git@github.com:revyos-ros/mp2p_icp-release.git
 tracks:
   humble:
     actions:
