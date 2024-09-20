@@ -4,8 +4,8 @@
 # See: https://github.com/MOLAorg/mp2p_icp/tree/master/apps/sm2mm
 #
 # Explanation of this particular pipeline:
-#  Create a 3D voxel map in which all observations are to be merged after 
-#  downsampling.
+#  Create a 3D voxel map in which all observations are to be merged after
+#  downsampling. Finally, a 2D slice of the voxelmap is extracted as a gridmap.
 # -----------------------------------------------------------------------------
 
 # --------------------------------------------------------
@@ -24,15 +24,15 @@ generators:
         class: mrpt::maps::CVoxelMap
         #plugin: 'libmola_metric_maps.so' # Import additional custom user-defined map classes (search in LD_LIBRARY_PATH)
         creationOpts:
-          resolution: 0.25 # [m]
+          resolution: 0.20 # [m]
           #resolution: $f{0.05*MAX_SENSOR_RANGE} # [m]  # You can also use formulas in any numeric field
         #insertionOpts:
         # none required for this class
         likelihoodOpts:
           decimation: 1
-          occupiedThreshold: 0.60
+          occupiedThreshold: 0.51
         renderOpts:
-          occupiedThreshold: 0.60
+          occupiedThreshold: 0.51
           freeThreshold: 0.40
           generateFreeVoxels: false
 
@@ -48,28 +48,11 @@ generators:
 # 2) Per local frame filtering
 # --------------------------------------------------------
 filters:
-  - class_name: mp2p_icp_filters::FilterAdjustTimestamps
-    params:
-      pointcloud_layer: 'raw'
-      silently_ignore_no_timestamps: true
-      method: 'TimestampAdjustMethod::MiddleIsZero'
-
-  - class_name: mp2p_icp_filters::FilterDeskew
-    params:
-      input_pointcloud_layer: 'raw'
-      output_pointcloud_layer: 'deskewed'
-      #silently_ignore_no_timestamps: true # To handle more dataset types
-      output_layer_class: 'mrpt::maps::CPointsMapXYZIRT'  # Keep intensity & ring channels
-      
-      # These (vx,...,wz) are variable names that must be defined via the
-      # mp2p_icp::Parameterizable API to update them dynamically.
-      twist: [vx,vy,vz,wx,wy,wz]
-
   - class_name: mp2p_icp_filters::FilterByRange
     params:
-      input_pointcloud_layer: 'deskewed'
+      input_pointcloud_layer: 'raw'
       output_layer_between: 'filtered'
-      range_min: 5.0
+      range_min: 3.0
       range_max: 100
       center: [robot_x, robot_y, robot_z]
 
@@ -77,7 +60,7 @@ filters:
     params:
       input_pointcloud_layer: 'filtered'
       output_pointcloud_layer: 'localmap_pre'
-      voxel_filter_resolution: 0.15  # [m]
+      voxel_filter_resolution: 0.10  # [m]
       decimate_method: DecimateMethod::FirstPoint
 
   - class_name: mp2p_icp_filters::FilterMerge
@@ -89,13 +72,17 @@ filters:
   # Remove layers not intended for map insertion:
   - class_name: mp2p_icp_filters::FilterDeleteLayer
     params:
-      pointcloud_layer_to_remove: ['raw', 'deskewed', 'filtered','localmap_pre']
+      pointcloud_layer_to_remove: ['raw', 'filtered','localmap_pre']
 
 
 # -------------------------------------------------------------------
 # 3) Final, overall filter pipeline to apply to the whole metric map
 # -------------------------------------------------------------------
-#final_filters:
-#  - (none)
-
-
+final_filters:
+  - class_name: mp2p_icp_filters::FilterVoxelSlice
+    params:
+      input_layer: 'voxelmap'
+      output_layer: 'gridmap'
+      # "z" coordinates at which to take the slice:
+      slice_z_min: 0.10
+      slice_z_max: 0.30
