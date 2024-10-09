@@ -126,19 +126,22 @@ void FilterDeskew::filter(mp2p_icp::metric_map_t& inOut) const
         // not possible to do de-skew:
         if (silently_ignore_no_timestamps || skip_deskew)
         {
-            // just copy points:
-            const size_t n0 = outPc->size();
-            outPc->resize(n0 + n);
-            for (size_t i = 0; i < n; i++)
-            {  // copy the point, including all optional attributes:
+            // just copy all points, including all optional attributes:
+            for (size_t i = 0; i < n; i++)  //
                 outPc->insertPointFrom(*inPc, i);
-            }
+
+            MRPT_LOG_DEBUG_STREAM(
+                "Skipping de-skewing in input cloud '"
+                << input_pointcloud_layer
+                << "' with contents: " << inPc->asString());
         }
         else
         {
             THROW_EXCEPTION_FMT(
                 "Input layer '%s' does not contain per-point timestamps, "
-                "cannot do scan deskew. Input contents: '%s'",
+                "cannot do scan deskew. Set "
+                "'silently_ignore_no_timestamps=true' to skip de-skew."
+                "Input map contents: '%s'",
                 input_pointcloud_layer.c_str(), inPc->asString().c_str());
         }
     }
