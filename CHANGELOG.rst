@@ -2,6 +2,97 @@
 Changelog for package mp2p_icp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.6.2 (2024-09-14)
+------------------
+* Expose << and >> operators for geo-reference data structures
+* Fix missing build_dep
+* Contributors: Jose Luis Blanco-Claraco
+
+1.6.1 (2024-09-11)
+------------------
+* Fix missing catkin buildtoo_depend for ROS1 builds
+* Update RTTI macros for upcoming MRPT 2.14.0
+* Contributors: Jose Luis Blanco-Claraco
+
+1.6.0 (2024-09-08)
+------------------
+* Port Point2Plane matcher to use the new NN-for-planes API
+* mp2p_icp_map library: add NearestPlaneCapable virtual API
+* cmake: move from glob expressions to explicit lists of source files
+* clarify eigenvalues order in headers
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.6 (2024-09-07)
+------------------
+* sm2mm cli: show map contents before writing to disk
+* add another demo sm2mm file for the mola tutorials
+* Add another sm2mm demo file w/o deskew for the mola mapping tutorial
+* Matcher_Point2Plane: fix build error in armhf
+* Fix build with embedded mola_common
+* README: Add ROS badges for all architectures
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.5 (2024-08-27)
+------------------
+* Explicitly add tbb as dependency in package.xml
+* Depend on new mrpt_lib packages (deprecate mrpt2)
+* FIX: build errors in armhf arch
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.4 (2024-08-20)
+------------------
+* Do not use Eigen::Vector for compatibility with Eigen3 <3.4 in ROS Noetic
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.3 (2024-08-20)
+------------------
+* Re-add ROS1 Noetic as supported distribution
+* Generator sanity check asserts: more informative error messages
+* sm-cli: new command 'join' to merge simplemaps
+* icp-log-viewer UI: new keybind 'I' to switch initial/final pose
+* icp-log-viewer UI: add option to visualize voxelmaps empty space
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.2 (2024-07-24)
+------------------
+* Add sm2mm yaml example for dynamic/static obstacles
+* Update sample sm2mm pipelines to use de-skew
+* docs: add mm-filter example
+* Fix pointcloud ptr typo
+* More safety sanity checks added in mm-viewer and sm2mm
+* BUGFIX: Generator should not create empty maps for GPS observations
+* Contributors: Jose Luis Blanco-Claraco, Raúl Aguilera López
+
+1.5.1 (2024-07-03)
+------------------
+* Update docs
+* ICP: Add optional functors for before-logging maps
+* icp-log-viewer UI: fix potential out-of-range exception when autoplay is on
+* FilterAdjustTimestamps: add new param 'time_offset' useful for multiple LiDARs setups
+* Contributors: Jose Luis Blanco-Claraco
+
+1.5.0 (2024-06-21)
+------------------
+* ICP: Add optional user-provided per-iteration hooks
+* Add new filter: FilterByRing
+* Add new filter: FilterAdjustTimestamps
+* Add sanity checks for point cloud fields.
+* Fix typo in default class for FilterDeskew
+* generators API: add bool return type to detect if observation was actually processed
+* generic Generator: handle velodyne observations so timestamps are generated
+* Contributors: Jose Luis Blanco-Claraco
+
+1.4.3 (2024-06-11)
+------------------
+* Add pointcloud_sanity_check() auxiliary function
+* Generator: more DEBUG level traces
+* BUGFIX: FilterDeskew generated buggy output points if the input does not contain timestamps
+* Add sanity checks for point cloud fields
+* ICP log records now also store the dynamic variables. icp-log-viewer displays them.
+* ICP log files: automatically create output directory if it does not exist
+* Update ros2 badges (added Jazzy)
+* Contributors: Jose Luis Blanco-Claraco
+
 1.4.2 (2024-05-28)
 ------------------
 * mm-viewer: add check-all, check-none to layer filters
