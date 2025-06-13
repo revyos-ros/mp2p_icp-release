@@ -18,8 +18,7 @@
 
 mp2p_icp::PointCloudEigen mp2p_icp::estimate_points_eigen(
     const float* xs, const float* ys, const float* zs,
-    mrpt::optional_ref<const std::vector<size_t>> indices,
-    std::optional<size_t>                         totalCount)
+    mrpt::optional_ref<const std::vector<size_t>> indices, std::optional<size_t> totalCount)
 {
     MRPT_START
 
@@ -31,9 +30,11 @@ mp2p_icp::PointCloudEigen mp2p_icp::estimate_points_eigen(
     if (totalCount)
     {
         if (*totalCount < 3)
+        {
             THROW_EXCEPTION("totalCount: at least 3 points required.");
+        }
 
-        const float inv_n = (1.0f / *totalCount);
+        const float inv_n = 1.0f / static_cast<float>(*totalCount);
         for (size_t i = 0; i < *totalCount; i++)
         {
             mean.x += xs[i];
@@ -59,9 +60,11 @@ mp2p_icp::PointCloudEigen mp2p_icp::estimate_points_eigen(
         const auto& idxs = indices->get();
 
         if (idxs.size() < 3)
+        {
             THROW_EXCEPTION("indices: at least 3 points required.");
+        }
 
-        const float inv_n = (1.0f / idxs.size());
+        const float inv_n = 1.0f / static_cast<float>(idxs.size());
         for (size_t i = 0; i < idxs.size(); i++)
         {
             const auto pt_idx = idxs[i];
@@ -73,9 +76,7 @@ mp2p_icp::PointCloudEigen mp2p_icp::estimate_points_eigen(
         for (size_t i = 0; i < idxs.size(); i++)
         {
             const auto pt_idx = idxs[i];
-            const auto a =
-                mrpt::math::TPoint3Df(xs[pt_idx], ys[pt_idx], zs[pt_idx]) -
-                mean;
+            const auto a      = mrpt::math::TPoint3Df(xs[pt_idx], ys[pt_idx], zs[pt_idx]) - mean;
             mat_a(0, 0) += a.x * a.x;
             mat_a(1, 0) += a.x * a.y;
             mat_a(2, 0) += a.x * a.z;
@@ -114,8 +115,8 @@ mp2p_icp::PointCloudEigen mp2p_icp::estimate_points_eigen(
 }
 
 void mp2p_icp::vector_of_points_to_xyz(
-    const std::vector<mrpt::math::TPoint3Df>& pts, std::vector<float>& xs,
-    std::vector<float>& ys, std::vector<float>& zs)
+    const std::vector<mrpt::math::TPoint3Df>& pts, std::vector<float>& xs, std::vector<float>& ys,
+    std::vector<float>& zs)
 {
     const auto N = pts.size();
     xs.resize(N);
