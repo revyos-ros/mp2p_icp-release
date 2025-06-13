@@ -13,13 +13,11 @@
 #include <mp2p_icp_filters/FilterDeleteLayer.h>
 #include <mrpt/containers/yaml.h>
 
-IMPLEMENTS_MRPT_OBJECT(
-    FilterDeleteLayer, mp2p_icp_filters::FilterBase, mp2p_icp_filters)
+IMPLEMENTS_MRPT_OBJECT(FilterDeleteLayer, mp2p_icp_filters::FilterBase, mp2p_icp_filters)
 
 using namespace mp2p_icp_filters;
 
-void FilterDeleteLayer::Parameters::load_from_yaml(
-    const mrpt::containers::yaml& c)
+void FilterDeleteLayer::Parameters::load_from_yaml(const mrpt::containers::yaml& c)
 {
     ASSERTMSG_(
         c.has("pointcloud_layer_to_remove"),
@@ -77,8 +75,7 @@ void FilterDeleteLayer::filter(mp2p_icp::metric_map_t& inOut) const
         {
             ASSERTMSG_(
                 nRemoved != 0,
-                mrpt::format(
-                    "Point cloud layer '%s' was not found.", layer.c_str()));
+                mrpt::format("Point cloud layer '%s' was not found.", layer.c_str()));
         }
         MRPT_LOG_DEBUG_STREAM("Deleted layer: '" << layer << "'");
     }
