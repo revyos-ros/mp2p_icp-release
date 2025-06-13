@@ -1,3 +1,26 @@
+## mp2p_icp (jazzy) - 1.7.0-1
+
+The packages in the `mp2p_icp` repository were released into the `jazzy` distro by running `/home/z572/gits/revyos-ros/venv/bin/bloom-release -r jazzy mp2p_icp --override-release-repository-push-url git@github.com:revyos-ros/mp2p_icp-release.git` on `Fri, 13 Jun 2025 01:57:15 -0000`
+
+The `mp2p_icp` package was released.
+
+Version of package(s) in repository `mp2p_icp`:
+
+- upstream repository: https://github.com/MOLAorg/mp2p_icp.git
+- release repository: https://github.com/revyos-ros/mp2p_icp-release.git
+- rosdistro version: `1.7.0-1`
+- old version: `1.6.6-1`
+- new version: `1.7.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## mp2p_icp (jazzy) - 1.6.6-1
 
 The packages in the `mp2p_icp` repository were released into the `jazzy` distro by running `/root/venv/bin/bloom-release -r jazzy mp2p_icp --override-release-repository-push-url git@github.com:revyos-ros/mp2p_icp-release.git` on `Thu, 06 Mar 2025 14:21:55 -0000`
