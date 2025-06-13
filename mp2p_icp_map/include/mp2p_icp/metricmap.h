@@ -15,6 +15,7 @@
 #include <mp2p_icp/layer_name_t.h>
 #include <mp2p_icp/plane_patch.h>
 #include <mp2p_icp/render_params.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/math/TLine3D.h>
@@ -29,6 +30,12 @@
 #include <optional>
 #include <string>
 #include <vector>
+
+/// Frwd declarations:
+namespace mrpt::containers
+{
+class yaml;
+}
 
 namespace mp2p_icp
 {
@@ -81,20 +88,40 @@ class metric_map_t : public mrpt::serialization::CSerializable,
     /** Plane patches=centroid point + infinite plane */
     std::vector<plane_patch_t> planes;
 
-    /** An optional numerical ID to identify the pointcloud in some higher-level
-     * system. Used to build the names of ICP debug files, if so requested.
-     * It is not mandatory and even duplicates may exist without problems: just
-     * a placeholder for the user of this library to use it.
+    /** An optional numerical ID to identify the pointcloud in some higher-level system. Used to
+     * build the names of ICP debug files, if so requested. It is not mandatory and even duplicates
+     * may exist without problems: just a placeholder for the user of this library to use it.
      */
     std::optional<uint64_t> id;
 
-    /** An optional textual identification/description of the pointcloud in some
-     * higher-level system. Used to build the names of ICP debug files, if so
-     * requested.
-     * It is not mandatory and even duplicates may exist without problems: just
-     * a placeholder for the user of this library to use it.
+    /** An optional textual identification/description of the pointcloud in some higher-level
+     * system. Used to build the names of ICP debug files, if so requested. It is not mandatory and
+     * even duplicates may exist without problems: just a placeholder for the user of this library
+     * to use it.
      */
     std::optional<std::string> label;
+
+    /** Generic metadata, in YAML format, to store any extra information by the user.
+     *
+     * Example usage:
+     * \code
+     *  metric_map_t map;
+     *  map.metadata["timestamp"] = "2023-10-01T12:00:00Z";
+     *  map.metadata["spot"] = "Alabama";
+     *
+     *  map.metadata["rules"] = mrpt::containers::yaml::Map();
+     *  map.metadata["rules"]["first"] = "don't kill humans";
+     *  map.metadata["rules"]["second"] = "do drinking";
+     *
+     *  map.metadata["sequence_example"] = mrpt::containers::yaml::Sequence();
+     *  map.metadata["sequence_example"].push_back(1.0);
+     *  map.metadata["sequence_example"].push_back("you can mix types");
+     *  map.metadata["sequence_example"].push_back(true);
+     * \endcode
+     *
+     * \note You can checkout the metadata of a ".mm" file using "mm-info" or "mm-viewer".
+     */
+    mrpt::containers::yaml metadata = mrpt::containers::yaml::Map();
 
     struct Georeferencing
     {
@@ -102,12 +129,10 @@ class metric_map_t : public mrpt::serialization::CSerializable,
          * reference. */
         mrpt::topography::TGeodeticCoords geo_coord;
 
-        /** The SE(3) transformation from the ENU (earth-north-up) frame
-         * to the metric map local frame of reference.
-         * If this is the identity (default) it means the map is already in
-         * ENU coordinates (i.e. +X is East, +Y is North, +Z is up) and
-         * the point (0,0,0) is the one having the geodetic coordinates
-         * geo_coord
+        /** The SE(3) transformation from the ENU (earth-north-up) frame to the metric map local
+         * frame of reference. If this is the identity (default) it means the map is already in ENU
+         * coordinates (i.e. +X is East, +Y is North, +Z is up) and the point (0,0,0) is the one
+         * having the geodetic coordinates geo_coord
          */
         mrpt::poses::CPose3DPDFGaussian T_enu_to_map;
     };
@@ -168,8 +193,8 @@ class metric_map_t : public mrpt::serialization::CSerializable,
      *  reimplement this method and call this base class method to render
      *  common elements.
      */
-    virtual auto get_visualization(const render_params_t& p = render_params_t())
-        const -> std::shared_ptr<mrpt::opengl::CSetOfObjects>;
+    virtual auto get_visualization(const render_params_t& p = render_params_t()) const
+        -> std::shared_ptr<mrpt::opengl::CSetOfObjects>;
 
     /** Merges all geometric entities from another point cloud into this one,
      * with an optional relative pose transformation.
@@ -181,8 +206,7 @@ class metric_map_t : public mrpt::serialization::CSerializable,
      */
     virtual void merge_with(
         const metric_map_t&                       otherPc,
-        const std::optional<mrpt::math::TPose3D>& otherRelativePose =
-            std::nullopt);
+        const std::optional<mrpt::math::TPose3D>& otherRelativePose = std::nullopt);
 
     /** Used inside get_visualization(), renders planes only. */
     void get_visualization_planes(
@@ -219,16 +243,10 @@ class metric_map_t : public mrpt::serialization::CSerializable,
 
    protected:
     /** Implement in derived classes if new data fields are required */
-    virtual void derivedSerializeTo(
-        [[maybe_unused]] mrpt::serialization::CArchive& out) const
-    {
-    }
+    virtual void derivedSerializeTo([[maybe_unused]] mrpt::serialization::CArchive& out) const {}
 
     /** Implement in derived classes if new data fields are required */
-    virtual void derivedSerializeFrom(
-        [[maybe_unused]] mrpt::serialization::CArchive& in)
-    {
-    }
+    virtual void derivedSerializeFrom([[maybe_unused]] mrpt::serialization::CArchive& in) {}
 };
 
 /** Function to extract the CPointsMap for any kind of
@@ -265,13 +283,18 @@ const mrpt::maps::NearestNeighborsCapable* MapToNN(
 const mp2p_icp::NearestPlaneCapable* MapToNP(
     const mrpt::maps::CMetricMap& map, bool throwIfNotImplemented);
 
-// Serialization of geo-reference information:
+/// Serialization of geo-reference information in binary form:
 mrpt::serialization::CArchive& operator>>(
-    mrpt::serialization::CArchive&               in,
-    std::optional<metric_map_t::Georeferencing>& g);
+    mrpt::serialization::CArchive& in, std::optional<metric_map_t::Georeferencing>& g);
+/// Serialization of geo-reference information in binary form:
 mrpt::serialization::CArchive& operator<<(
-    mrpt::serialization::CArchive&                     out,
-    const std::optional<metric_map_t::Georeferencing>& g);
+    mrpt::serialization::CArchive& out, const std::optional<metric_map_t::Georeferencing>& g);
+
+/// Serialization of geo-reference information as YAML
+std::optional<metric_map_t::Georeferencing> FromYAML(const mrpt::containers::yaml& yaml_data);
+
+/// Serialization of geo-reference information as YAML
+mrpt::containers::yaml ToYAML(const std::optional<metric_map_t::Georeferencing>& gref);
 
 /** @} */
 
