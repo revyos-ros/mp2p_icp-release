@@ -21,8 +21,7 @@
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CPointsMapXYZIRT.h>
 
-IMPLEMENTS_MRPT_OBJECT(
-    FilterDecimateVoxels, mp2p_icp_filters::FilterBase, mp2p_icp_filters)
+IMPLEMENTS_MRPT_OBJECT(FilterDecimateVoxels, mp2p_icp_filters::FilterBase, mp2p_icp_filters)
 
 using namespace mp2p_icp_filters;
 
@@ -102,14 +101,11 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
     size_t                               reserveSize = 0;
     for (const auto& inputLayer : params_.input_pointcloud_layer)
     {
-        if (auto itLy = inOut.layers.find(inputLayer);
-            itLy != inOut.layers.end())
+        if (auto itLy = inOut.layers.find(inputLayer); itLy != inOut.layers.end())
         {
             auto pcPtr = mp2p_icp::MapToPointsMap(*itLy->second);
             if (!pcPtr)
-                THROW_EXCEPTION_FMT(
-                    "Layer '%s' must be of point cloud type.",
-                    inputLayer.c_str());
+                THROW_EXCEPTION_FMT("Layer '%s' must be of point cloud type.", inputLayer.c_str());
 
             pcPtrs.push_back(pcPtr);
             reserveSize += pcPtr->size() / 10;  // heuristic
@@ -119,9 +115,7 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
             // Input layer doesn't exist:
             if (params_.error_on_missing_input_layer)
             {
-                THROW_EXCEPTION_FMT(
-                    "Input layer '%s' not found on input map.",
-                    inputLayer.c_str());
+                THROW_EXCEPTION_FMT("Input layer '%s' not found on input map.", inputLayer.c_str());
             }
             else
             {
@@ -203,9 +197,7 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
         }
 
         // 2nd) collect grid results:
-        std::set<
-            PointCloudToVoxelGridSingle::indices_t,
-            PointCloudToVoxelGridSingle::IndicesHash>
+        std::set<PointCloudToVoxelGridSingle::indices_t, PointCloudToVoxelGridSingle::IndicesHash>
             flattenUsedBins;
 
         grid.visit_voxels(
@@ -218,18 +210,15 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
 
                 if (params_.flatten_to.has_value())
                 {
-                    const PointCloudToVoxelGridSingle::indices_t flattenIdx = {
-                        idx.cx_, idx.cy_, 0};
+                    const PointCloudToVoxelGridSingle::indices_t flattenIdx = {idx.cx_, idx.cy_, 0};
 
                     // first time?
-                    if (flattenUsedBins.count(flattenIdx) != 0)
-                        return;  // nope. Skip this point.
+                    if (flattenUsedBins.count(flattenIdx) != 0) return;  // nope. Skip this point.
 
                     // First time we see this (x,y) cell:
                     flattenUsedBins.insert(flattenIdx);
 
-                    outPc->insertPointFast(
-                        vxl.point->x, vxl.point->y, *params_.flatten_to);
+                    outPc->insertPointFast(vxl.point->x, vxl.point->y, *params_.flatten_to);
                 }
                 else
                 {
@@ -263,9 +252,7 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
         auto rng = mrpt::random::CRandomGenerator();
         // TODO?: rng.randomize(seed);
 
-        std::set<
-            PointCloudToVoxelGrid::indices_t,
-            PointCloudToVoxelGrid::IndicesHash>
+        std::set<PointCloudToVoxelGrid::indices_t, PointCloudToVoxelGrid::IndicesHash>
             flattenUsedBins;
 
         grid.visit_voxels(
@@ -293,8 +280,7 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
                     }
                     mean *= inv_n;
 
-                    if (params_.decimate_method ==
-                        DecimateMethod::ClosestToAverage)
+                    if (params_.decimate_method == DecimateMethod::ClosestToAverage)
                     {
                         std::optional<float>  minSqrErr;
                         std::optional<size_t> bestIdx;
@@ -302,10 +288,9 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
                         for (size_t i = 0; i < vxl.indices.size(); i++)
                         {
                             const auto  pt_idx = vxl.indices[i];
-                            const float sqrErr =
-                                mrpt::square(xs[pt_idx] - mean.x) +
-                                mrpt::square(ys[pt_idx] - mean.y) +
-                                mrpt::square(zs[pt_idx] - mean.z);
+                            const float sqrErr = mrpt::square(xs[pt_idx] - mean.x) +
+                                                 mrpt::square(ys[pt_idx] - mean.y) +
+                                                 mrpt::square(zs[pt_idx] - mean.z);
 
                             if (!minSqrErr.has_value() || sqrErr < *minSqrErr)
                             {
@@ -325,10 +310,9 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
                 else
                 {
                     // Insert a randomly-picked point:
-                    const auto idxInVoxel =
-                        (params_.decimate_method == DecimateMethod::RandomPoint)
-                            ? (rng.drawUniform64bit() % vxl.indices.size())
-                            : 0UL;
+                    const auto idxInVoxel = (params_.decimate_method == DecimateMethod::RandomPoint)
+                                                ? (rng.drawUniform64bit() % vxl.indices.size())
+                                                : 0UL;
 
                     const auto pt_idx = vxl.indices.at(idxInVoxel);
                     insertPtIdx       = pt_idx;
@@ -337,28 +321,26 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
                 // insert it, if passed the flatten filter:
                 if (params_.flatten_to.has_value())
                 {
-                    const PointCloudToVoxelGrid::indices_t flattenIdx = {
-                        idx.cx_, idx.cy_, 0};
+                    const PointCloudToVoxelGrid::indices_t flattenIdx = {idx.cx_, idx.cy_, 0};
 
                     // first time?
-                    if (flattenUsedBins.count(flattenIdx) != 0)
-                        return;  // nope. Skip this point.
+                    if (flattenUsedBins.count(flattenIdx) != 0) return;  // nope. Skip this point.
 
                     // First time we see this (x,y) cell:
                     flattenUsedBins.insert(flattenIdx);
 
                     if (!insertPt)
-                        insertPt.emplace(
-                            xs[insertPtIdx], ys[insertPtIdx], zs[insertPtIdx]);
-                    outPc->insertPointFast(
-                        insertPt->x, insertPt->y, *params_.flatten_to);
+                        insertPt.emplace(xs[insertPtIdx], ys[insertPtIdx], zs[insertPtIdx]);
+                    outPc->insertPointFast(insertPt->x, insertPt->y, *params_.flatten_to);
                 }
                 else
                 {
                     if (insertPt)
-                        outPc->insertPointFast(
-                            insertPt->x, insertPt->y, insertPt->z);
-                    else { outPc->insertPointFrom(pc, insertPtIdx); }
+                        outPc->insertPointFast(insertPt->x, insertPt->y, insertPt->z);
+                    else
+                    {
+                        outPc->insertPointFrom(pc, insertPtIdx);
+                    }
                 }
             });
 
@@ -367,11 +349,9 @@ void FilterDecimateVoxels::filter(mp2p_icp::metric_map_t& inOut) const
     outPc->mark_as_modified();
 
     MRPT_LOG_DEBUG_STREAM(
-        "Voxel count=" << nonEmptyVoxels
-                       << ", output_layer=" << params_.output_pointcloud_layer
+        "Voxel count=" << nonEmptyVoxels << ", output_layer=" << params_.output_pointcloud_layer
                        << " type=" << outPc->GetRuntimeClass()->className
-                       << " useSingleGrid="
-                       << (useSingleGrid() ? "Yes" : "No"));
+                       << " useSingleGrid=" << (useSingleGrid() ? "Yes" : "No"));
 
     MRPT_END
 }
