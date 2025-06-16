@@ -68,7 +68,10 @@ void ParameterSource::realize()
                         "[ParameterSource] Attached parameter target is "
                         "monostate!");
                 }
-                else if constexpr (std::is_same_v<T, double*>) { *arg = val; }
+                else if constexpr (std::is_same_v<T, double*>)
+                {
+                    *arg = val;
+                }
                 else if constexpr (std::is_same_v<T, float*>)
                 {
                     *arg = static_cast<float>(val);
@@ -85,8 +88,7 @@ void ParameterSource::realize()
 }
 
 template <typename T>
-void Parameterizable::parseAndDeclareParameter_impl(
-    const std::string& value, T& target)
+void Parameterizable::parseAndDeclareParameter_impl(const std::string& value, T& target)
 {
     internal::InfoPerParam& ipm = declParameters_.emplace_back();
 
@@ -115,20 +117,17 @@ void Parameterizable::parseAndDeclareParameter_impl(
     }
 }
 
-void Parameterizable::parseAndDeclareParameter(
-    const std::string& value, double& target)
+void Parameterizable::parseAndDeclareParameter(const std::string& value, double& target)
 {
     parseAndDeclareParameter_impl(value, target);
 }
 
-void Parameterizable::parseAndDeclareParameter(
-    const std::string& value, float& target)
+void Parameterizable::parseAndDeclareParameter(const std::string& value, float& target)
 {
     parseAndDeclareParameter_impl(value, target);
 }
 
-void Parameterizable::parseAndDeclareParameter(
-    const std::string& value, uint32_t& target)
+void Parameterizable::parseAndDeclareParameter(const std::string& value, uint32_t& target)
 {
     parseAndDeclareParameter_impl(value, target);
 }
